@@ -1,6 +1,7 @@
 // coded by jawadtech x
 
 const path = require("path");
+const { fetchGif, fetchImage, gifToSticker } = require('../lib/sticker-utils');
 const { tmpdir } = require("os");
 const fetch = require("node-fetch");
 const Crypto = require("crypto");
@@ -56,5 +57,26 @@ cmd(
       reply(`❌ An error occurred: ${error.message}`);
     }
   }
-);
-    
+);    
+
+
+cmd({
+    pattern: "attp",
+    desc: "Convert text to a GIF sticker.",
+    react: "✨",
+    category: "convert",
+    use: ".attp HI",
+    filename: __filename,
+}, async (conn, mek, m, { args, reply }) => {
+    try {
+        if (!args[0]) return reply("*Please provide text!*");
+
+        const gifBuffer = await fetchGif(`https://api-fix.onrender.com/api/maker/attp?text=${encodeURIComponent(args[0])}`);
+        const stickerBuffer = await gifToSticker(gifBuffer);
+
+        await conn.sendMessage(m.chat, { sticker: stickerBuffer }, { quoted: mek });
+    } catch (error) {
+        reply(`❌ ${error.message}`);
+    }
+});
+
