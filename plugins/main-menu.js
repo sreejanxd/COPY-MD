@@ -109,6 +109,36 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 ┃◈┃• tagadmins
 ┃◈└───────────┈⊷
 ╰──────────────┈⊷
+╭━━〔 *Reactions Menu* 〕━━┈⊷
+┃◈╭─────────────·๏
+┃◈┃• bully @tag
+┃◈┃• cuddle @tag
+┃◈┃• cry @tag
+┃◈┃• hug @tag
+┃◈┃• awoo @tag
+┃◈┃• kiss @tag
+┃◈┃• lick @tag
+┃◈┃• pat @tag
+┃◈┃• smug @tag
+┃◈┃• bonk @tag
+┃◈┃• yeet @tag
+┃◈┃• blush @tag
+┃◈┃• smile @tag
+┃◈┃• wave @tag
+┃◈┃• highfive @tag
+┃◈┃• handhold @tag
+┃◈┃• nom @tag
+┃◈┃• bite @tag
+┃◈┃• glomp @tag
+┃◈┃• slap @tag
+┃◈┃• kill @tag
+┃◈┃• happy @tag
+┃◈┃• wink @tag
+┃◈┃• poke @tag
+┃◈┃• dance @tag
+┃◈┃• cringe @tag
+┃◈└───────────┈⊷
+╰──────────────┈⊷
 ╭━━〔 *Owner Menu* 〕━━┈⊷
 ┃◈╭─────────────·๏
 ┃◈┃• owner
@@ -288,7 +318,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         await conn.sendMessage(
             from,
             {
-                image: { url: `https://files.catbox.moe/juroe8.jpg` },
+                image: { url: `https://files.catbox.moe/7zfdcq.jpg` },
                 caption: dec,
                 contextInfo: {
                     mentionedJid: [m.sender],
