@@ -337,7 +337,6 @@ reply(`❌ *Error Accurated !!*\n\n${e}`)
 cmd({
     pattern: "tagall",
     react: "🔊",
-    alias: ["f_tagall"],
     desc: "To Tag all Members",
     category: "group",
     use: '.tagall',
@@ -369,7 +368,6 @@ reply(`❌ *Error Accurated !!*\n\n${e}`)
 cmd({
     pattern: "hidetag",
     react: "🔊",
-    alias: ["tag","f_tag"],
     desc: "To Tag all Members for Message",
     category: "group",
     use: '.tag Hi',
@@ -397,7 +395,7 @@ reply(`❌ *Error Accurated !!*\n\n${e}`)
 cmd({
     pattern: "taggp",
     react: "🔊",
-    alias: ["tggp","f_taggp"],
+    alias: ["tggp","djtaggp"],
     desc: "To Tag all Members for Message",
     category: "group",
     use: '.tag Hi',
