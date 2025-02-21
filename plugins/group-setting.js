@@ -2,62 +2,6 @@ const config = require('../config')
 const { cmd, commands } = require('../command')
 const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson} = require('../lib/functions')
 
-
-
-cmd({
-    pattern: "updategname",
-    react: "🔓",
-    alias: ["upgname","gname"],
-    desc: "To Change the group name",
-    category: "group",
-    use: '.updategname',
-    filename: __filename
-},
-async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isCreator ,isDev, isAdmins, reply}) => {
-try{
-const msr = (await fetchJson('https://raw.githubusercontent.com/JawadYTX/KHAN-DATA/refs/heads/main/MSG/mreply.json')).replyMsg
-
-if (!isGroup) return reply(msr.only_gp)
-if (!isAdmins) { if (!isDev) return reply(msr.you_adm),{quoted:mek }} 
-if (!isBotAdmins) return reply(msr.give_adm)
-if (!q) return reply("*Please write the new Group Subject* 🖊️")
-await conn.groupUpdateSubject(from, q )
- await conn.sendMessage(from , { text: `✔️ *Group name Updated*` }, { quoted: mek } )
-} catch (e) {
-await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
-console.log(e)
-reply(`❌ *Error Accurated !!*\n\n${e}`)
-}
-} )
-
-
-cmd({
-    pattern: "updategdesc",
-    react: "🔓",
-    alias: ["upgdesc","gdesc"],
-    desc: "To Change the group description",
-    category: "group",
-    use: '.updategdesc',
-    filename: __filename
-},
-async(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isCreator ,isDev, isAdmins, reply}) => {
-try{
-const msr = (await fetchJson('https://raw.githubusercontent.com/JawadYTX/KHAN-DATA/refs/heads/main/MSG/mreply.json')).replyMsg
-
-if (!isGroup) return reply(msr.only_gp)
-if (!isAdmins) { if (!isDev) return reply(msr.you_adm),{quoted:mek }} 
-if (!isBotAdmins) return reply(msr.give_adm)
-if (!q) return reply("*Please write the new Group Description* 🖊️")
-await conn.groupUpdateDescription(from, q )
- await conn.sendMessage(from , { text: `✔️ *Group Description Updated*` }, { quoted: mek } )
-} catch (e) {
-await conn.sendMessage(from, { react: { text: '❌', key: mek.key } })
-console.log(e)
-reply(`❌ *Error Accurated !!*\n\n${e}`)
-}
-} )
-
-
 cmd({
     pattern: "join",
     react: "📬",
