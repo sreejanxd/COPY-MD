@@ -13,7 +13,7 @@ KHAN-MD BY JawadTechX 💜
 
 --- 
 
-<a><img src='https://files.catbox.moe/juroe8.jpg'/></a>
+<a><img src='https://files.catbox.moe/7zfdcq.jpg'/></a>
 
 ---
 
