@@ -6,7 +6,7 @@ const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, 
 cmd({
     pattern: "kick",
     react: "🥏",
-    alias: ["remove"],
+    alias: ["k", "remove"],
     desc: "To Remove a participant from Group",
     category: "group",
     use: '.kick',
