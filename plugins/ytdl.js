@@ -47,6 +47,6 @@ cmd({
     reply(`✅ *${title}* has been downloaded successfully!`);
   } catch (error) {
     console.error(error);
-    reply("❌ An error occurred while processing your request.");
+    reply(" An error occurred while processing your request.");
   }
 });
