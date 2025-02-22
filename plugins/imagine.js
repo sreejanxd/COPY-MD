@@ -1,63 +1,71 @@
-const { cmd, commands } = require("../command");
+const { cmd } = require("../command");
 const { fetchJson } = require("../lib/functions");
-
-cmd({
-  pattern: "stablediffussion",
-  alias: ["sd", "imagine2"],
-  react: "🎉",
-  desc: "Generate an image using AI API.",
-  category: "fun",
-  filename: __filename
-}, async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
-  try {
-    if (!q) {
-      return reply("Please provide a prompt for the image.");
-    }
-
-    await reply("Generating Imagine...");
-
-    const response = await fetchJson(`https://api.giftedtech.web.id/api/ai/fluximg?apikey=gifted&prompt=${q}`);
-    const imageUrl = response.result;
-
-    await conn.sendMessage(m.chat, {
-      image: {
-        url: imageUrl
-      }
-    });
-
-  } catch (error) {
-    console.error(error);
-    reply("An error occurred: " + error.message);
-  }
-});
-
 
 cmd({
   pattern: "fluxai",
   alias: ["flux", "imagine"],
   react: "🚀",
-  desc: "Generate an image using AI.",
+  desc: "Generate an image using Flux AI.",
   category: "main",
   filename: __filename
-}, async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+}, async (conn, mek, m, { q, reply }) => {
+  if (!q) return reply("Please provide a prompt for the image.");
+  
+  await reply("> *KHAN-AI CREATING IMAGE...🔥*");
+
   try {
-    if (!q) {
-      return reply("Please provide a prompt for the image.");
-    }
-
-    await reply("> *KHAN-AI CREATING IMAGINE ...🔥*");
+    const response = await fetchJson(`https://api.siputzx.my.id/api/ai/flux?prompt=${q}`);
+    if (!response || !response.result) throw new Error("Failed to fetch image.");
     
-    const response = await fetchJson(`https://api.giftedtech.web.id/api/ai/fluximg?apikey=gifted&prompt=${q}`);
-    const imageUrl = response.result;
-
-    await conn.sendMessage(m.chat, {
-      image: {
-        url: imageUrl
-      }
-    });
-
+    await conn.sendMessage(m.chat, { image: { url: response.result } });
   } catch (error) {
     console.error(error);
-    reply("An error occurred: " + error.message);
+    reply("❌ Error generating image: " + error.message);
+  }
+});
+
+cmd({
+  pattern: "stability",
+  alias: ["stabilityai", "stable"],
+  react: "🎨",
+  desc: "Generate an image using Stability AI.",
+  category: "main",
+  filename: __filename
+}, async (conn, mek, m, { q, reply }) => {
+  if (!q) return reply("Please provide a prompt for the image.");
+
+  await reply("> *KHAN-AI GENERATING IMAGE...🎨*");
+
+  try {
+    const response = await fetchJson(`https://api.siputzx.my.id/api/ai/stabilityai?prompt=${q}`);
+    if (!response || !response.result) throw new Error("Failed to fetch image.");
+
+    await conn.sendMessage(m.chat, { image: { url: response.result } });
+  } catch (error) {
+    console.error(error);
+    reply("❌ Error generating image: " + error.message);
+  }
+});
+
+cmd({
+  pattern: "sdiffusion",
+  alias: ["sd", "stable-diffusion"],
+  react: "🖌️",
+  desc: "Generate an image using Stable Diffusion.",
+  category: "main",
+  filename: __filename
+}, async (conn, mek, m, { q, reply }) => {
+  if (!q) return reply("Please provide a prompt for the image.");
+
+  await reply("> *KHAN-AI GENERATING IMAGE...🖌️*");
+
+  try {
+    const response = await fetchJson(`https://api.siputzx.my.id/api/ai/stable-diffusion?prompt=${q}`);
+    if (!response || !response.result) throw new Error("Failed to fetch image.");
+
+    await conn.sendMessage(m.chat, { image: { url: response.result } });
+  } catch (error) {
+    console.error(error);
+    reply("❌ Error generating image: " + error.message);
   }
 });
