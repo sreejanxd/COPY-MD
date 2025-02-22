@@ -32,7 +32,7 @@ cmd({
     const apiUrl = `https://api.davidcyriltech.my.id/download/ytmp3?url=${videoUrl}`;
     const response = await axios.get(apiUrl);
     if (!response.data.success) {
-      return reply(`❌ Failed to fetch audio for "${searchQuery}".`);
+      return reply(`Failed to fetch audio for "${searchQuery}".`);
     }
 
     const { title, download_url } = response.data.result;
