@@ -10,10 +10,10 @@ const generateImage = async (conn, m, q, apiUrl, reply) => {
     await reply("> *JAWAD-MD CREATING IMAGINE ...🔥*");
     
     const response = await fetchJson(`${apiUrl}?prompt=${encodeURIComponent(q)}`);
-    console.log("API Response:", response);
+    console.log("Full API Response:", JSON.stringify(response, null, 2));
 
-    if (!response || !response.result) {
-      return reply("Error: API response is invalid or empty.");
+    if (!response || typeof response !== "object" || !response.result) {
+      return reply("Error: The API did not return a valid image. Try again later.");
     }
 
     await conn.sendMessage(m.chat, {
@@ -21,7 +21,7 @@ const generateImage = async (conn, m, q, apiUrl, reply) => {
     });
   } catch (error) {
     console.error("API Error:", error);
-    reply("An error occurred: " + (error.message || "Unknown error"));
+    reply("An error occurred while fetching the image.");
   }
 };
 
