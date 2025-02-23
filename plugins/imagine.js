@@ -12,16 +12,21 @@ const generateImage = async (conn, m, q, apiUrl, reply) => {
     const response = await fetchJson(`${apiUrl}?prompt=${encodeURIComponent(q)}`);
     console.log("Full API Response:", JSON.stringify(response, null, 2));
 
-    if (!response || typeof response !== "object" || !response.result) {
+    if (!response || typeof response !== "object") {
+      return reply("Error: Invalid API response format.");
+    }
+
+    const imageUrl = response.result || response.data?.result || response.image;
+    if (!imageUrl) {
       return reply("Error: The API did not return a valid image. Try again later.");
     }
 
     await conn.sendMessage(m.chat, {
-      image: { url: response.result },
+      image: { url: imageUrl },
     });
   } catch (error) {
     console.error("API Error:", error);
-    reply("An error occurred while fetching the image.");
+    reply("An error occurred: " + error.message);
   }
 };
 
