@@ -1,5 +1,6 @@
 const { cmd } = require("../command");
 const axios = require("axios");
+const fs = require("fs");
 
 cmd({
   pattern: "fluxai",
@@ -15,22 +16,17 @@ cmd({
     await reply("> *JAWAD-MD CREATING IMAGINE ...🔥*");
 
     const apiUrl = `https://api.siputzx.my.id/api/ai/flux?prompt=${encodeURIComponent(q)}`;
-    const { data } = await axios.get(apiUrl, { responseType: "json" });
 
-    console.log("Full API Response:", data); // Debugging log
+    const response = await axios.get(apiUrl, { responseType: "arraybuffer" });
 
-    if (!data || !data.result) {
+    if (!response || !response.data) {
       return reply("Error: The API did not return a valid image. Try again later.");
     }
 
-    const imageUrl = data.result;
-
-    if (!imageUrl.startsWith("http")) {
-      return reply("Error: Received an invalid image URL from the API.");
-    }
+    const imageBuffer = Buffer.from(response.data, "binary");
 
     await conn.sendMessage(m.chat, {
-      image: { url: imageUrl },
+      image: imageBuffer,
       caption: `🔮 *AI Generated Image* 🔮\n✨ Prompt: ${q}`
     });
 
