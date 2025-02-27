@@ -1,53 +1,49 @@
-const { cmd } = require("../command");
-const axios = require("axios");
+const { cmd } = require('../command');
+const axios = require('axios');
 
 cmd({
-  pattern: "fb2",
-  react: "🎬",
-  desc: "Download video from Facebook by URL.",
-  category: "media",
-  use: ".fb2 <facebook video URL>",
+  pattern: "fb",
+  alias: ["facebook", "fbdl"],
+  desc: "Download Facebook videos",
+  category: "download",
   filename: __filename
-}, async (conn, mek, msg, { from, args, reply, react }) => {
+}, async (conn, m, store, { from, q, reply }) => {
   try {
-    const url = args[0];
-    if (!url) return reply("*Please provide a Facebook video URL.*");
-
-    await react("⏳"); // Show processing reaction
-    reply("*🎬 Downloading video from Facebook...*");
-
-    // Fetch video details from the new API
-    const apiUrl = `https://delirius-apiofc.vercel.app/download/facebook?url=${encodeURIComponent(url)}`;
-    const response = await axios.get(apiUrl);
-
-    if (!response.data.urls || response.data.urls.length === 0) {
-      await react("❌");
-      return reply("❌ Failed to fetch video from Facebook.");
+    if (!q || !q.startsWith("https://")) {
+      return reply("*`Need a valid Facebook URL!`*");
     }
 
-    // Select HD if available, otherwise use SD
-    const hdVideo = response.data.urls.find(v => v.hd)?.hd;
-    const sdVideo = response.data.urls.find(v => v.sd)?.sd;
-    const videoUrl = hdVideo || sdVideo;
+    await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
 
-    if (!videoUrl) {
-      await react("❌");
-      return reply("❌ No downloadable video found.");
+    const apiUrl = `https://lance-frank-asta.onrender.com/api/downloader?url=${encodeURIComponent(q)}`;
+    const { data } = await axios.get(apiUrl);
+
+    if (!data?.content?.status || !data?.content?.data?.result?.length) {
+      throw new Error("Invalid API response or no video found.");
     }
 
-    await react("📥"); // Show downloading reaction
+    let videoData = data.content.data.result.find(v => v.quality === "HD") || 
+                    data.content.data.result.find(v => v.quality === "SD");
+
+    if (!videoData) {
+      throw new Error("No valid video URL found.");
+    }
 
     await conn.sendMessage(from, {
-      video: { url: videoUrl },
-      mimetype: "video/mp4",
-      caption: "Powered By JawadTechX"
-    }, { quoted: mek });
-
-    await react("✅"); // Success reaction
+      video: { url: videoData.url },
+      caption: `📥 *Downloaded in ${videoData.quality} Quality*\n\n🔗 *Powered By JawadTechX*`
+    }, { quoted: m });
 
   } catch (error) {
-    console.error(error);
-    await react("❌");
-    reply("❌ An error occurred while processing your request.");
+    console.error("FB Download Error:", error);
+
+    // Send error details to bot owner
+    const ownerNumber = conn.user.id.split(":")[0] + "@s.whatsapp.net";
+    await conn.sendMessage(ownerNumber, {
+      text: `⚠️ *FB Downloader Error!*\n\n📍 *Group/User:* ${from}\n💬 *Query:* ${q}\n❌ *Error:* ${error.message || error}`
+    });
+
+    // Notify the user
+    reply("❌ *Error:* Unable to process the request. Please try again later.");
   }
 });
