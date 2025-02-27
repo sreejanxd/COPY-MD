@@ -27,7 +27,6 @@ cmd({
         captionMessage += `💬 *Comments:* ${videoStats.comments}\n`;
         captionMessage += `🔁 *Shares:* ${videoStats.shares}\n`;
         captionMessage += `👤 *Author:* ${author.nickname} (@${author.username})\n`;
-        captionMessage += `🎶 *Music:* [Click Here](${videoData.music})\n`;
         captionMessage += `\n🔹 *Reply with:* \n 1️⃣ for *Video* 📽️ \n 2️⃣ for *Audio* 🎵`;
 
         // Send the message with TikTok thumbnail and context info
