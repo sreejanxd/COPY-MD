@@ -1,73 +1,92 @@
-const { cmd } = require('../command');
-const fetch = require('node-fetch');
+const axios = require("axios");
+const { cmd } = require("../command");
 
 cmd({
     pattern: "tiktok2",
-    alias: ["tt2", "tiktokdl2", "ttdown2", "tiktokvid2", "ttdl"],
-    desc: "Download TikTok videos using a link.",
+    alias: ["tt2", "tiktokdl2", "ttdown2", "tiktokvid2", "ttdl2"],    desc: "Download TikTok videos or audio by link.",
     category: "downloader",
+    react: "🎵",
     filename: __filename
-},
-async (conn, mek, m, { from, args, quoted, reply }) => {
+}, async (conn, mek, m, { args, reply, isQuoted }) => {
     try {
-        // Validate input
-        if (!args[0]) {
-            return reply(`✳️ Use this command like:\n *${command} <TikTok link>*`);
-        }
+        if (!args[0]) return reply("❌ Please provide a TikTok video link.");
 
-        reply("⏳ Fetching video details... Please wait.");
+        const apiURL = `https://apii.ambalzz.biz.id/api/downloader/tiktokdl?url=${encodeURIComponent(args[0])}`;
+        const { data } = await axios.get(apiURL);
 
-        const res = await fetch(`https://darkcore-api.onrender.com/api/tiktok?url=${encodeURIComponent(args[0])}`);
-        if (!res.ok) {
-            return reply("❎ Unable to fetch data. Please try again later.");
-        }
+        if (data.status !== 0) return reply("❌ Failed to fetch video. Try another link.");
 
-        const data = await res.json();
-        if (!data.success) {
-            return reply("❎ Failed to fetch video. Please check the link and try again.");
-        }
+        const videoData = data.data;
+        const videoStats = data.video_view;
+        const author = data.author;
 
-        const { author, titulo, thumbanail, mp4, mp3 } = data.result;
+        let captionMessage = `🎵 *TikTok Video Found!*\n\n`;
+        captionMessage += `📌 *Caption:* ${videoData.caption_vid || "No caption"}\n`;
+        captionMessage += `👀 *Views:* ${videoStats.views}\n`;
+        captionMessage += `❤️ *Likes:* ${videoStats.likes}\n`;
+        captionMessage += `💬 *Comments:* ${videoStats.comments}\n`;
+        captionMessage += `🔁 *Shares:* ${videoStats.shares}\n`;
+        captionMessage += `👤 *Author:* ${author.nickname} (@${author.username})\n`;
+        captionMessage += `🎶 *Music:* [Click Here](${videoData.music})\n`;
+        captionMessage += `\n🔹 *Reply with:* \n 1️⃣ for *Video* 📽️ \n 2️⃣ for *Audio* 🎵`;
 
-        // Send the initial options with a thumbnail
-        const caption = `📖 *Title:* ${titulo}\n👤 *Author:* ${author}\n\n📥 *Reply with:*\n1️⃣ for *Video*\n2️⃣ for *Audio*`;
-        const menuMsg = await conn.sendMessage(from, {
-            image: { url: thumbanail },
-            caption
-        }, { quoted: mek });
-
-        // Wait for the user to reply with the option
-        conn.ev.on('messages.upsert', async (msgUpdate) => {
-            const msg = msgUpdate.messages[0];
-            if (!msg.message || !msg.message.extendedTextMessage) return;
-
-            const userReply = msg.message.extendedTextMessage.text.trim();
-
-            // Ensure the user reply references the correct message
-            if (msg.message.extendedTextMessage.contextInfo && msg.message.extendedTextMessage.contextInfo.stanzaId === menuMsg.key.id) {
-                if (userReply === '1') {
-                    // Send video
-                    await conn.sendMessage(from, {
-                        video: { url: mp4 },
-                        caption: "🎥 *Here is your TikTok video!*"
-                    }, { quoted: mek });
-                } else if (userReply === '2') {
-                    // Send audio
-                    await conn.sendMessage(from, {
-                        audio: { url: mp3 },
-                        mimetype: 'audio/mpeg',
-                        caption: "🎵 *Here is the extracted audio!*"
-                    }, { quoted: mek });
-                } else {
-                    reply("❎ Invalid option. Please reply with `1` for video or `2` for audio.");
+        // Send the message with TikTok thumbnail and context info
+        const sentMessage = await conn.sendMessage(m.chat, {
+            image: { url: author.profile },
+            caption: captionMessage,
+            contextInfo: {
+                mentionedJid: [m.sender],
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: '120363354023106228@newsletter',
+                    newsletterName: "JawadTechX",
+                    serverMessageId: 143
                 }
             }
         });
 
+        const messageID = sentMessage.key.id;
+
+        // Listen for user response
+        conn.ev.on("messages.upsert", async message => {
+            const receivedMessage = message.messages[0];
+            if (!receivedMessage.message) return;
+
+            const userResponse = receivedMessage.message.conversation || 
+                                 receivedMessage.message.extendedTextMessage?.["text"];
+            const chatID = receivedMessage.key.remoteJid;
+            const isReplyToBotMessage = receivedMessage.message.extendedTextMessage &&
+                                        receivedMessage.message.extendedTextMessage.contextInfo.stanzaId === messageID;
+
+            if (isReplyToBotMessage) {
+                await conn.sendMessage(chatID, {
+                    react: { text: "⬇️", key: receivedMessage.key }
+                });
+
+                if (userResponse === "1") {
+                    await conn.sendMessage(chatID, {
+                        video: { url: videoData.video },
+                        caption: "*© Powered by JawadTechX* 🚀"
+                    }, { quoted: receivedMessage });
+                } else if (userResponse === "2") {
+                    await conn.sendMessage(chatID, {
+                        audio: { url: videoData.music },
+                        mimetype: "audio/mp4",
+                        ptt: false 
+                    }, { quoted: receivedMessage });
+                } else {
+                    reply("❌ Invalid choice! Reply with *1* for video or *2* for audio.");
+                }
+
+                await conn.sendMessage(chatID, {
+                    react: { text: "⬆️", key: receivedMessage.key }
+                });
+            }
+        });
+
     } catch (error) {
-        console.error(error);
-        reply("❎ An error occurred while processing your request. Please try again later.");
+        console.error("TikTok Downloader Error:", error);
+        reply("❌ Error fetching TikTok video. Try again later.");
     }
-});
-
-
+}); 
