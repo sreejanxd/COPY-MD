@@ -3,8 +3,8 @@ const PDFDocument = require('pdfkit');
 const { Buffer } = require('buffer');
 
 cmd({
-    pattern: "topdf",
-    alias: "pdf",
+    pattern: "pdf",
+    alias: ["pdf","topdf"],use: '.pdf',
     desc: "Convert provided text to a PDF file.",
     react: "📄",
     category: "utilities",
