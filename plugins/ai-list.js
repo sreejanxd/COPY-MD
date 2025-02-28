@@ -58,3 +58,33 @@ async (conn, mek, m, { from, args, q, reply, react }) => {
         reply("An error occurred while communicating with the AI.");
     }
 });
+
+
+cmd({
+    pattern: "deepseek",
+    alias: ["deep", "seekai"],
+    desc: "Chat with DeepSeek AI",
+    category: "ai",
+    react: "👾",
+    filename: __filename
+},
+async (conn, mek, m, { from, args, q, reply, react }) => {
+    try {
+        if (!q) return reply("Please provide a message for DeepSeek AI.\nExample: `.deepseek Hello`");
+
+        const apiUrl = `https://api.ryzendesu.vip/api/ai/deepseek?text=${encodeURIComponent(q)}`;
+        const { data } = await axios.get(apiUrl);
+
+        if (!data || !data.answer) {
+            await react("❌");
+            return reply("DeepSeek AI failed to respond. Please try again later.");
+        }
+
+        await reply(`👾 *DeepSeek AI Response:*\n\n${data.answer}`);
+        await react("✅");
+    } catch (e) {
+        console.error("Error in DeepSeek AI command:", e);
+        await react("❌");
+        reply("An error occurred while communicating with DeepSeek AI.");
+    }
+});
